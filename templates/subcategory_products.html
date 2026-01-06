@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ subcategory_name }} – {{ category_name }} | BeiRadar</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .products-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .product-card {
+            width: 220px;
+            background-color: #f9f9f9;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: center;
+            padding: 15px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+
+        .product-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .price-info {
+            margin-top: 10px;
+        }
+
+        .old-price {
+            text-decoration: line-through;
+            color: #888;
+            margin-right: 5px;
+        }
+
+        .discount {
+            color: #e53935;
+            font-weight: bold;
+        }
+
+        h2.sec-title {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .back-link {
+            display: block;
+            margin: 20px auto;
+            text-align: center;
+            font-weight: bold;
+            text-decoration: none;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2 class="sec-title">{{ subcategory_name }} – {{ category_name }}</h2>
+        <a href="{{ url_for('category_detail', category_slug=category_name.lower().replace(' ', '-')) }}" class="back-link">← Back to {{ category_name }}</a>
+    </header>
+
+    <div class="products-container">
+        {% for product in products %}
+        <div class="product-card">
+            {% if product.image_url %}
+            <img src="{{ product.image_url }}" alt="{{ product.name }}">
+            {% else %}
+            <img src="{{ url_for('static', filename='no-image.png') }}" alt="{{ product.name }}">
+            {% endif %}
+            <div class="product-name">{{ product.name }} {{ product.weight }}</div>
+            <div class="price-info">
+                {% if product.best_price %}
+                    <span class="current-price">{{ product.best_price | format_currency }}</span>
+                    {% if product.on_sale %}
+                        <span class="old-price">{{ product.stores[product.best_store].original | format_currency }}</span>
+                        <span class="discount">-{{ product.stores[product.best_store].discount }}%</span>
+                    {% endif %}
+                    <div class="store">from {{ product.best_store }}</div>
+                {% else %}
+                    <span>N/A</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>

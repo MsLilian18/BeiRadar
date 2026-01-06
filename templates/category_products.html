@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeiRadar – {{ category_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* Product Grid Layout */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Product Card - Similar to first image */
+        .product-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        /* Product Image - Centered */
+        .product-image-container {
+            width: 100%;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            background: #f9f9f9;
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .product-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* Product Title */
+        .product-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #111;
+            margin: 0 0 8px 0;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        /* Category Label */
+        .product-category {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* Best Price Banner - Like first image */
+        .best-price-banner {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .best-price-banner .price-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .best-price-banner .label {
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        .best-price-banner .price {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .best-price-banner .on-sale-badge {
+            background: #ff6b6b;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Store Comparison Section */
+        .store-comparison {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .best-deal-tag {
+            text-align: center;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .store-prices {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .store-price-card {
+            background: #f9f9f9;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .store-price-card:hover {
+            background: #fff;
+            border-color: #667eea;
+        }
+
+        .store-price-card.best-deal {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-color: #4caf50;
+        }
+
+        .store-price-card .store-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        .store-price-card .price-section {
+            text-align: right;
+        }
+
+        .store-price-card .current-price {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #111;
+            margin: 0;
+        }
+
+        .store-price-card .original-price {
+            font-size: 0.8rem;
+            color: #999;
+            text-decoration: line-through;
+            margin: 0;
+        }
+
+        .store-price-card .discount-label {
+            font-size: 0.75rem;
+            color: #ff6b6b;
+            font-weight: 600;
+        }
+
+        /* Add to Cart Section */
+        .add-to-cart-section {
+            width: 100%;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .quantity-input {
+            width: 60px;
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .add-to-cart-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .add-to-cart-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Section Title */
+        .sec-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #111;
+            margin: 30px 0;
+        }
+
+        /* No Products Message */
+        .no-products {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+                padding: 15px;
+            }
+
+            .best-price-banner {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="nav">
+    <!-- Brand -->
+    <div class="brand">
+        <span class="brand-icon">📡</span>
+        BeiRadar
+    </div>
+
+    <!-- Hamburger -->
+    <div class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- Navigation Links -->
+    <nav class="nav-center" id="nav-links">
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('categories_list') }}">Categories</a>
+        <a href="{{ url_for('deals') }}">Deals</a>
+        <a href="{{ url_for('about') }}">About</a>
+    </nav>
+
+    <!-- Right Icons -->
+    <div class="nav-right">
+        <!-- Notifications -->
+        <a href="#" class="nav-notif">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+            </svg>
+            <span class="notif-badge">3</span>
+        </a>
+
+        <!-- Cart -->
+        <a href="{{ url_for('cart_view') }}" class="nav-cart">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+            </svg>
+            {% if session.get('cart') %}
+                <span class="cart-badge">{{ session['cart']|length }}</span>
+            {% endif %}
+        </a>
+    </div>
+</header>
+
+    <!-- Products Section -->
+    <section class="result">
+        <h2 class="sec-title">{{ category_name }}</h2>
+
+        {% if products %}
+            <div class="products-grid">
+                {% for product in products %}
+                <div class="product-card">
+                    <!-- Product Image - Centered -->
+                    <div class="product-image-container">
+                       {% if product['image_url'] %}
+    <img src="{{ get_image_url(product['image_url']) }}" alt="{{ product['product'] }}" width="200">
+
+
+{% else %}
+    <div style="color: #ccc; font-size: 3rem;">📦</div>
+{% endif %}
+
+                    </div>
+
+                    <!-- Product Title -->
+                    <h3>{{ product['name'] }}</h3>
+                    
+                    <!-- Category Label -->
+                    {% if product.get('category') %}
+                    <p class="product-category">{{ product['category'] }}</p>
+                    {% endif %}
+
+                    <!-- Best Price Banner -->
+                    {% if product['best_price'] %}
+<div class="best-price-banner">
+    <div class="price-info">
+        <span class="label">Best Price:</span>
+        <span class="price">KSh {{ "{:,.0f}".format(product['best_price']) }}</span>
+    </div>
+    {% if product.get('on_sale') %}
+    <div class="on-sale-badge">On Sale</div>
+    {% endif %}
+</div>
+{% endif %}
+
+                    
+                    <!-- Store Comparison -->
+                    <div class="store-comparison">
+                        {% if product['best_store'] %}
+                        <div class="best-deal-tag">✓ Best Deal</div>
+                        {% endif %}
+
+                        <div class="store-prices">
+                            {% for store_name in ['Carrefour', 'Naivas', 'Quickmart'] %}
+                                {% set store_data = product['stores'].get(store_name) %}
+                                <div class="store-price-card {% if store_name == product['best_store'] %}best-deal{% endif %}">
+                                    <div class="store-name">
+                                        {{ store_name }}
+                                        {% if store_name == product['best_store'] %}
+                                            <span style="background: #4caf50; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; margin-left: 8px; font-weight: 600;">✓ BEST</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="price-section">
+                                        {% if store_data and store_data.get('current') %}
+                                            <p class="current-price">KSh {{ "{:,.0f}".format(store_data['current']) }}</p>
+                                            {% if store_data.get('original') and store_data['original'] != store_data['current'] %}
+                                            <p class="original-price">KSh {{ "{:,.0f}".format(store_data['original']) }}</p>
+                                            <p class="discount-label">
+                                                Save KSh {{ "{:,.0f}".format(store_data['original'] - store_data['current']) }}
+                                            </p>
+                                            {% endif %}
+                                        {% else %}
+                                            <p class="current-price" style="color: #999; font-weight: 400;">Not Available</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Add to Cart Form -->
+                   <form method="POST" action="{{ url_for('cart_add', product_name=product['name']) }}">
+                        <input type="number" name="quantity" value="1" min="1" class="quantity-input">
+                        <button type="submit" class="add-to-cart-btn">🛒 Add to Cart</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-products">
+                <p>Click a subcategory to explore products and compare prices.</p>
+            </div>
+        {% endif %}
+    </section>
+</body>
+    <script>
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('nav-links');
+
+hamburger.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+    hamburger.classList.toggle('open');
+});
+
+hamburger.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+    hamburger.classList.toggle('open');
+});
+</script>
+</html>

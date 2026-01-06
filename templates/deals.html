@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeiRadar – Hot Deals</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* Deals Hero Section */
+        .deals-hero {
+            background: white;
+            padding: 60px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            margin-top: 30px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .deals-hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 15px;
+        }
+
+        .deals-hero p {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .deals-count {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Store Filter Section */
+        .store-filter {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .store-filter-btn {
+            background: #f5f5f5;
+            color: #333;
+            border: 2px solid #ddd;
+            padding: 10px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .store-filter-btn:hover {
+            background: #efefef;
+            border-color: #667eea;
+        }
+
+        .store-filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        /* Deals Grid */
+        .deals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .deal-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .deal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Discount Badge */
+        .discount-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ff6b6b;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            z-index: 10;
+        }
+
+        /* Product Image */
+        .deal-image-container {
+            width: 100%;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9f9f9;
+            padding: 15px;
+            position: relative;
+        }
+
+        .deal-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* Deal Content */
+        .deal-content {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .deal-product-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #111;
+            margin: 0 0 8px 0;
+            line-height: 1.3;
+        }
+
+        .deal-category {
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+
+        .deal-store-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            width: fit-content;
+        }
+
+        /* Pricing Section */
+        .deal-pricing {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: auto;
+            margin-bottom: 15px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .price-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .price-label {
+            color: #666;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .original-price {
+            font-size: 1rem;
+            color: #999;
+            text-decoration: line-through;
+        }
+
+        .deal-price {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #4caf50;
+        }
+
+        .savings {
+            font-size: 0.95rem;
+            color: #ff6b6b;
+            font-weight: 600;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            margin-top: 10px;
+        }
+
+        /* Add to Cart Button */
+        .deal-add-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .deal-add-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* No Deals */
+        .no-deals {
+            text-align: center;
+            padding: 80px 20px;
+            color: #666;
+        }
+
+        .no-deals h2 {
+            font-size: 1.5rem;
+            color: #111;
+            margin-bottom: 10px;
+        }
+
+        .no-deals p {
+            font-size: 1.05rem;
+            margin-bottom: 20px;
+        }
+
+        .no-deals a {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .deals-hero {
+                padding: 40px 20px;
+            }
+
+            .deals-hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .deals-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 15px;
+                padding: 15px;
+            }
+
+            .discount-badge {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="nav">
+        <div class="brand">
+            <span class="brand-icon">📡</span>
+            BeiRadar
+        </div>
+
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <nav class="nav-center" id="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('categories_list') }}">Categories</a>
+            <a href="{{ url_for('deals') }}">Deals</a>
+            <a href="{{ url_for('about') }}">About</a>
+        </nav>
+
+        <div class="nav-right">
+            <a href="#" class="nav-notif">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+                </svg>
+                <span class="notif-badge">3</span>
+            </a>
+
+            <a href="{{ url_for('cart_view') }}" class="nav-cart">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                </svg>
+                {% if session.get('cart') %}
+                    <span class="cart-badge">{{ session['cart']|length }}</span>
+                {% endif %}
+            </a>
+        </div>
+    </header>
+
+    <!-- Deals Hero Section -->
+    <section class="deals-hero">
+        <h1>🔥 Hot Deals</h1>
+        <p>Get the biggest discounts across Nairobi's top supermarkets</p>
+        {% if deals %}
+            <div class="deals-count">{{ deals|length }} Amazing Deals Available</div>
+        {% endif %}
+
+        <!-- Store Filter -->
+        <div class="store-filter">
+            <button class="store-filter-btn active" onclick="filterDeals('all')">All Stores</button>
+            <button class="store-filter-btn" onclick="filterDeals('Carrefour')">🏪 Carrefour</button>
+            <button class="store-filter-btn" onclick="filterDeals('Naivas')">🏪 Naivas</button>
+            <button class="store-filter-btn" onclick="filterDeals('Quickmart')">🏪 Quickmart</button>
+        </div>
+    </section>
+
+    <!-- Deals Grid Section -->
+    <section>
+        {% if deals %}
+            <div class="deals-grid">
+                {% for deal in deals %}
+                <div class="deal-card" data-store="{{ deal.store }}">
+                    <!-- Discount Badge -->
+                    <div class="discount-badge">
+                        🎉 {{ "{:.0f}".format(deal.deal_percentage) }}% OFF
+                    </div>
+
+                    <!-- Product Image -->
+                    <div class="deal-image-container">
+                        {% if deal.image_url %}
+                            <img src="{{ get_image_url(deal.image_url) }}" alt="{{ deal.product_name }}" class="deal-image">
+                        {% else %}
+                            <div style="color: #ccc; font-size: 3rem;">📦</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Deal Content -->
+                    <div class="deal-content">
+                        <h3 class="deal-product-name">{{ deal.product_name }}</h3>
+                        <p class="deal-category">{{ deal.category }}</p>
+                        
+                        <!-- Store Badge -->
+                        <div class="deal-store-badge">
+                            🏪 {{ deal.store }}
+                        </div>
+
+                        <!-- Pricing -->
+                        <div class="deal-pricing">
+                            <div class="price-row">
+                                <span class="price-label">Original Price:</span>
+                                <span class="original-price">KSh {{ "{:,.0f}".format(deal.old_price) }}</span>
+                            </div>
+                            <div class="price-row">
+                                <span class="price-label">Deal Price:</span>
+                                <span class="deal-price">KSh {{ "{:,.0f}".format(deal.new_price) }}</span>
+                            </div>
+                            <div class="savings">
+                                💰 Save KSh {{ "{:,.0f}".format(deal.old_price - deal.new_price) }}
+                            </div>
+                        </div>
+
+                        <!-- Add to Cart Button -->
+                        <form method="POST" action="{{ url_for('cart_add', product_name=deal.product_name) }}">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="deal-add-btn">🛒 Add Deal to Cart</button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-deals">
+                <h2>No Hot Deals Right Now</h2>
+                <p>Check back later for amazing discounts!</p>
+                <a href="{{ url_for('home') }}">← Browse All Products</a>
+            </div>
+        {% endif %}
+    </section>
+
+    <footer>
+        <p>© 2025 BeiRadar</p>
+    </footer>
+
+</body>
+
+<script>
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('nav-links');
+
+    hamburger.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+        hamburger.classList.toggle('open');
+    });
+
+    function filterDeals(store) {
+        const dealCards = document.querySelectorAll('.deal-card');
+        const filterBtns = document.querySelectorAll('.store-filter-btn');
+
+        // Update active button
+        filterBtns.forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+
+        // Filter deals
+        dealCards.forEach(card => {
+            if (store === 'all' || card.dataset.store === store) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+</script>
+
+</html>

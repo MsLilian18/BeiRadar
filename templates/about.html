@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeiRadar – About</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+    <!-- Decorative Circles -->
+    <div class="circle c1"></div>
+    <div class="circle c2"></div>
+
+    <header class="nav">
+    <!-- Brand -->
+    <div class="brand">
+        <span class="brand-icon">📡</span>
+        BeiRadar
+    </div>
+
+    <!-- Hamburger -->
+    <div class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- Navigation Links -->
+    <nav class="nav-center" id="nav-links">
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('categories_list') }}">Categories</a>
+        <a href="{{ url_for('deals') }}">Deals</a>
+        <a href="{{ url_for('about') }}">About</a>
+    </nav>
+
+    <!-- Right Icons -->
+    <div class="nav-right">
+        <!-- Notifications -->
+        <a href="#" class="nav-notif">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+            </svg>
+            <span class="notif-badge">3</span>
+        </a>
+
+        <!-- Cart -->
+        <a href="{{ url_for('cart_view') }}" class="nav-cart">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+            </svg>
+            {% if session.get('cart') %}
+                <span class="cart-badge">{{ session['cart']|length }}</span>
+            {% endif %}
+        </a>
+    </div>
+</header>
+
+</body>
+
+    <!-- About Section -->
+    <section class="result">
+        <div class="product-card" style="max-width: 900px; margin: 40px auto;">
+
+            <h1 style="text-align: center; margin-bottom: 1rem;">About BeiRadar</h1>
+
+            <p style="font-size: 1.1rem; line-height: 1.6;">
+                Welcome to <strong>BeiRadar</strong> — your ultimate smart shopping assistant!  
+                BeiRadar helps you compare prices of everyday essentials like milk, sugar, and more  
+                across Kenya’s top supermarkets including <strong>Naivas</strong>, <strong>Carrefour</strong>, and <strong>Quickmart</strong>.
+            </p>
+
+            <h2>Our Mission</h2>
+            <p>
+                At BeiRadar, our mission is simple — to help Kenyans make smarter shopping choices.  
+                We believe that knowing where to buy at the best price shouldn’t be a struggle.  
+                Our platform keeps you informed, helping you save both money and time.
+            </p>
+
+            <h2>How It Works</h2>
+            <p>
+                BeiRadar continuously collects and compares prices from leading supermarket sources.  
+                You can <a href="{{ url_for('home') }}">search</a> for items, explore categories like <strong>Dairy</strong> or <strong>Sugar & Sweeteners</strong>,  
+                or check our <a href="{{ url_for('deals') }}">Hot Deals</a> section for active discounts.
+            </p>
+
+            <h2>Why Choose BeiRadar</h2>
+            <ul>
+                <li>Accurate and frequently updated prices</li>
+                <li>Save money through transparent price comparisons</li>
+                <li>Clean, easy-to-use design for quick searches</li>
+                <li>Data from trusted supermarket sources</li>
+            </ul>
+
+            <h2>Get In Touch</h2>
+            <p>
+                Have suggestions, feedback, or want to collaborate? Reach out at 
+                <a href="mailto:support@beiradar.com">support@beiradar.com</a>.
+            </p>
+
+            <p style="margin-top: 1.5rem; font-style: italic; color: #555; text-align: center;">
+                “BeiRadar — spot the best prices before you shop.”
+            </p>
+
+        </div>
+    </section>
+
+<script>
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('nav-links');
+
+hamburger.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+    hamburger.classList.toggle('open');
+});
+</script>
+
+
+</body>
+</html>

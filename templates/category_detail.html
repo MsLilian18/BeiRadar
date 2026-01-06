@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeiRadar – {{ category_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* Card container */
+        .subcategory-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        /* Individual cards */
+        .subcategory-card {
+            width: 160px;
+            height: 160px;
+            background: linear-gradient(145deg, #fef6e4, #fff9f0);
+            border-radius: 16px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .subcategory-card::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: calc(100% + 20px);
+            height: calc(100% + 20px);
+            border-radius: 16px;
+            background: linear-gradient(45deg, #ffd5d5, #ffe5a8, #c4f0ff);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .subcategory-card:hover::before {
+            opacity: 1;
+        }
+
+        .subcategory-card:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+        }
+
+        /* Icon inside card */
+        .subcategory-card span.icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .subcategory-card h4 {
+            margin: 0;
+            font-weight: 600;
+            color: #333;
+        }
+
+        h2.sec-title {
+            margin-top: 30px;
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        .tagline {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 1rem;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+    <body>
+    <!-- Decorative Circles -->
+    <div class="circle c1"></div>
+    <div class="circle c2"></div>
+
+    <!-- Navigation -->
+    <header class="nav">
+    <!-- Brand -->
+    <div class="brand">
+        <span class="brand-icon">📡</span>
+        BeiRadar
+    </div>
+
+    <!-- Hamburger -->
+    <div class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- Navigation Links -->
+    <nav class="nav-center" id="nav-links">
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('categories_list') }}">Categories</a>
+        <a href="{{ url_for('deals') }}">Deals</a>
+        <a href="{{ url_for('about') }}">About</a>
+    </nav>
+
+    <!-- Right Icons -->
+    <div class="nav-right">
+        <!-- Notifications -->
+        <a href="#" class="nav-notif">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+            </svg>
+            <span class="notif-badge">3</span>
+        </a>
+
+        <!-- Cart -->
+        <a href="{{ url_for('cart_view') }}" class="nav-cart">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+            </svg>
+            {% if session.get('cart') %}
+                <span class="cart-badge">{{ session['cart']|length }}</span>
+            {% endif %}
+        </a>
+    </div>
+</header>
+</body>
+
+    <!-- Subcategories Section -->
+    <section class="result">
+        <h2 class="sec-title">{{ category_name }}</h2>
+        <p class="tagline">Click a subcategory to explore products and compare prices.</p>
+
+        <div class="subcategory-container">
+            {% for sub in subcategories %}
+            <div class="subcategory-card"
+      onclick="window.location.href='{{ url_for('products_by_subcategory', subcategory_slug=sub|lower|replace(' ', '-')) }}'"> 
+    <span class="icon">
+        {% if sub == 'Rice' %}&#127834;
+        {% elif sub == 'Cooking Oil' %}&#x1F373;
+        {% elif sub == 'Sugar' %}&#127852;
+        {% elif sub == 'Milk' %}&#129371;
+        {% elif sub == 'Yoghurt' %}&#129371;
+        {% elif sub == 'Cheese' %}&#129472;
+        {% elif sub == 'Cleaning Products' %}&#129508;
+        {% elif sub == 'Soap' %}&#129484;
+        {% elif sub == 'Toilet Paper' %}&#129531;
+        {% elif sub == 'Toothpaste' %}&#128290;
+        {% elif sub == 'Lotion' %}&#128717;
+        {% elif sub == 'Sanitary Pads' %}&#10084;
+        {% else %}&#128717;{% endif %}
+    </span>
+    <h4>{{ sub }}</h4>
+</div>
+
+            {% endfor %}
+        </div>
+
+    </section>
+
+</body>
+<script>
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('nav-links');
+
+hamburger.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+    hamburger.classList.toggle('open');
+});
+</script>
+
+</html>

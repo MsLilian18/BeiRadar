@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeiRadar — Shopping Cart</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .cart-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .cart-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 10px;
+        }
+
+        .cart-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .cart-items {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            align-items: flex-start;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-image {
+            width: 120px;
+            height: 120px;
+            background: #f9f9f9;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .item-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .item-details {
+            flex: 1;
+        }
+
+        .item-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #111;
+            margin: 0 0 5px 0;
+        }
+
+        .item-category {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .item-price-info {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .item-best-store {
+            color: #4caf50;
+            font-weight: 600;
+        }
+
+        .item-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .quantity-control button {
+            background: none;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .quantity-control input {
+            width: 50px;
+            border: none;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .remove-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .remove-btn:hover {
+            background: #ff5252;
+        }
+
+        .cart-summary-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .summary-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 20px;
+        }
+
+        .store-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            background: #f9f9f9;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .store-total-row.best-deal {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-color: #4caf50;
+        }
+
+        .store-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .store-total-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #111;
+        }
+
+        .savings-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .savings-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .savings-amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+
+        .checkout-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-cart h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .empty-cart p {
+            font-size: 1.05rem;
+            margin-bottom: 20px;
+        }
+
+        .empty-cart a {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .warning-badge {
+            background: #fff3cd;
+            color: #856404;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            border-left: 4px solid #ffc107;
+        }
+
+        @media (max-width: 768px) {
+            .cart-content {
+                grid-template-columns: 1fr;
+            }
+
+            .cart-summary-card {
+                position: static;
+            }
+
+            .cart-item {
+                flex-direction: column;
+            }
+
+            .item-image {
+                width: 100%;
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="nav">
+        <div class="brand">
+            <span class="brand-icon">📡</span>
+            BeiRadar
+        </div>
+
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <nav class="nav-center" id="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('categories_list') }}">Categories</a>
+            <a href="{{ url_for('deals') }}">Deals</a>
+            <a href="{{ url_for('about') }}">About</a>
+        </nav>
+
+        <div class="nav-right">
+            <a href="#" class="nav-notif">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+                </svg>
+                <span class="notif-badge">3</span>
+            </a>
+
+            <a href="{{ url_for('cart_view') }}" class="nav-cart">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                </svg>
+                {% if session.get('cart') %}
+                    <span class="cart-badge">{{ session['cart']|length }}</span>
+                {% endif %}
+            </a>
+        </div>
+    </header>
+
+    <section class="cart-container">
+        <h1 class="cart-title">🛒 Your Shopping Cart</h1>
+
+        {% if products %}
+            <div class="cart-content">
+                <!-- Cart Items -->
+                <div class="cart-items">
+                    {% for item in products %}
+                    <div class="cart-item">
+                        <div class="item-image">
+                            {% if item.get('image_url') %}
+                                <img src="{{ get_image_url(item['image_url']) }}" alt="{{ item['name'] }}">
+                            {% else %}
+                                <div style="color: #ccc; font-size: 2rem;">📦</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="item-details">
+                            <h3 class="item-name">{{ item['name'] }}</h3>
+                            <p class="item-category">{{ item.get('category', 'Uncategorized') }}</p>
+
+                            <div class="item-price-info">
+                                <span>Best: <strong>KSh {{ "{:,.0f}".format(item['best_price']) }}</strong></span>
+                                <span class="item-best-store">at {{ item['best_store'] }}</span>
+                            </div>
+
+                            <div class="item-controls">
+                                <form method="POST" action="{{ url_for('cart_update', product_name=item['name']) }}" style="display: flex; gap: 10px; align-items: center;">
+                                    <div class="quantity-control">
+                                        <button type="button" onclick="decreaseQty(this)">−</button>
+                                        <input type="number" name="quantity" value="{{ item['quantity'] }}" min="1" readonly>
+                                        <button type="button" onclick="increaseQty(this)">+</button>
+                                    </div>
+                                    <button type="submit" style="background: #667eea; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: 600;">Update</button>
+                                </form>
+                                <a href="{{ url_for('cart_remove', product_name=item['name']) }}" class="remove-btn">Remove</a>
+                            </div>
+
+                            <div class="item-price-info" style="margin-top: 10px; font-size: 1rem; font-weight: 600;">
+                                Subtotal: <strong>KSh {{ "{:,.0f}".format(item['best_price'] * item['quantity']) }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Summary Card -->
+                <div class="cart-summary-card">
+                    <h2 class="summary-title">💰 Store Comparison</h2>
+
+                    {% if cart_summary['has_all_stores'] %}
+                        <p style="color: #666; font-size: 0.9rem; margin-bottom: 15px;">
+                            Total cost if you shop at:
+                        </p>
+                    {% else %}
+                        <div class="warning-badge">
+                            ⚠️ Not all items available at every store. Totals shown are partial.
+                        </div>
+                    {% endif %}
+
+                    {% for store in ['Carrefour', 'Naivas', 'Quickmart'] %}
+                        {% set total = cart_summary['by_store'].get(store, 0) %}
+                        {% if total > 0 %}
+                        <div class="store-total-row {% if store == cart_summary['best_store'] %}best-deal{% endif %}">
+                            <div class="store-name">
+                                {{ store }}
+                                {% if store == cart_summary['best_store'] %}
+                                    <span style="background: #4caf50; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; margin-left: 8px;">✓ BEST DEAL</span>
+                                {% endif %}
+                            </div>
+                            <div class="store-total-price">KSh {{ "{:,.0f}".format(total) }}</div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if cart_summary['max_savings'] > 0 %}
+                    <div class="savings-info">
+                        <div class="savings-label">You could save:</div>
+                        <div class="savings-amount">KSh {{ "{:,.0f}".format(cart_summary['max_savings']) }}</div>
+                        <div style="font-size: 0.9rem; margin-top: 8px;">
+                            by shopping at {{ cart_summary['best_store'] }} instead of the most expensive store
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <button class="checkout-btn">Proceed to Checkout</button>
+                </div>
+            </div>
+        {% else %}
+            <div class="empty-cart">
+                <h2>Your cart is empty</h2>
+                <p>Start shopping to compare prices across stores and save money!</p>
+                <a href="{{ url_for('home') }}">← Continue Shopping</a>
+            </div>
+        {% endif %}
+    </section>
+
+    <footer>
+        <p>© 2025 BeiRadar</p>
+    </footer>
+
+    <script>
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('nav-links');
+
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            hamburger.classList.toggle('open');
+        });
+
+        function increaseQty(btn) {
+            const input = btn.parentElement.querySelector('input');
+            input.value = parseInt(input.value) + 1;
+        }
+
+        function decreaseQty(btn) {
+            const input = btn.parentElement.querySelector('input');
+            if (parseInt(input.value) > 1) {
+                input.value = parseInt(input.value) - 1;
+            }
+        }
+    </script>
+</body>
+</html>
