@@ -1,9 +1,11 @@
-# Force GitHub to count Python
+# Count Python normally
 *.py linguist-language=Python
 
-# Keep HTML counted but reduce its weight
-*.html linguist-detectable=false
+# Count HTML normally
+*.html linguist-language=HTML
 
-# Optional: other files
+# Count CSS normally
 *.css linguist-language=CSS
+
+# Optional JS
 *.js linguist-language=JavaScript
