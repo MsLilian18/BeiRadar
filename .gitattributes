@@ -1,11 +1,17 @@
-# Count Python normally
+# Python files - main logic
 *.py linguist-language=Python
 
-# Count HTML normally
+# HTML templates - still counted
 *.html linguist-language=HTML
 
-# Count CSS normally
+# CSS - still counted
 *.css linguist-language=CSS
 
-# Optional JS
+# JS - still counted
 *.js linguist-language=JavaScript
+
+# Optional: ignore other files like images or config if needed
+*.png linguist-detectable=false
+*.jpg linguist-detectable=false
+*.ico linguist-detectable=false
+*.json linguist-detectable=false
