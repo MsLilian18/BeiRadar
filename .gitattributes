@@ -1,17 +1,9 @@
-# Python files - main logic
+# Force GitHub to count Python
 *.py linguist-language=Python
 
-# HTML templates - still counted
-*.html linguist-language=HTML
+# Keep HTML counted but reduce its weight
+*.html linguist-detectable=false
 
-# CSS - still counted
+# Optional: other files
 *.css linguist-language=CSS
-
-# JS - still counted
 *.js linguist-language=JavaScript
-
-# Optional: ignore other files like images or config if needed
-*.png linguist-detectable=false
-*.jpg linguist-detectable=false
-*.ico linguist-detectable=false
-*.json linguist-detectable=false
